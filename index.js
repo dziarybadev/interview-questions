@@ -6,8 +6,8 @@ console.log('12' + 3); // '123'
 console.log('12' - 3); // 9
 
 // 2
-console.log(2 == '2') // true
-console.log(12 === '12') // false
+console.log(2 == '2'); // true
+console.log(12 === '12'); // false
 console.log(null == undefined); // true
 console.log(NaN === NaN); // false
 console.log({ a: 1 } == { a: 1 }); // false
@@ -79,3 +79,89 @@ const users = [
     { userId: 6, ordersCount: 21, country: 'USA' },
     { userId: 7, ordersCount: 6, country: 'Canada' },
 ];
+
+// предполагаемый результат
+const result = {
+    USA: {
+        ordersCount: 39,
+        users: [
+            { userId: 6, ordersCount: 21, country: 'USA' },
+            { userId: 1, ordersCount: 15, country: 'USA' },
+            { userId: 4, ordersCount: 3, country: 'USA' },
+        ],
+    },
+    England: {
+        ordersCount: 23,
+        users: [
+            { userId: 5, ordersCount: 23, country: 'England' },
+        ],
+    },
+    Canada: {
+        ordersCount: 6,
+        users: [
+            { userId: 7, ordersCount: 6, country: 'Canada' },
+        ],
+    },
+}
+
+// Одно из возможных решений:
+
+function aggregate(data) {
+    return data.reduce((acc, user) => {
+        const { country, ordersCount } = user;
+        console.log(country, acc.hasOwnProperty(country))
+        if (!acc.hasOwnProperty(country)) {
+            acc[country] = { ordersCount, users: [user] };
+        } else {
+            acc[country].ordersCount += ordersCount;
+            acc[country].users = [...acc[country].users, user].sort((a, b) => a.ordersCount - b.ordersCount);
+        }
+
+        return acc;
+    }, {});
+}
+
+// 7.1
+const obj = {
+    method1() { console.log(this); },
+    
+    method2: () => { console.log(this); },
+    
+    method3: () => {
+        const bar = () => console.log(this);
+        bar();
+    },
+    
+    method4() {
+        const bar = () => console.log(this);
+        bar();
+    }
+}
+
+obj.method1(); // obj
+obj.method2(); // window
+obj.method3(); // windows
+obj.method4(); // obj
+
+// 7.2
+
+const method = obj.method1.bind(obj).bind(window);
+method() // obj
+
+
+// 8
+
+console.log('script start') // 1
+
+setTimeout(() => console.log('setTimeout'), 0); // 6
+
+new Promise((res, rej) => {
+    console.log('promise 1'); // 2
+    res();
+}).then(() => {
+    console.log('promise 1 then'); // 5
+});
+
+new Promise((res, rej) => console.log('promise 2')); // 3
+
+console.log('script end'); // 4
